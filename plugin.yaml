@@ -1,0 +1,11 @@
+name: oathbreaker-provider
+kind: model-provider
+version: 1.0.0
+requires_hermes: ">=0.23.1"
+description: Oathbreaker AI as a model provider - GLM-5.3 Abliterated and GLM-5.3 Flash Abliterated through a prepaid OpenAI-compatible API
+author: Formacha LLC
+requires_env:
+  - name: OATHBREAKER_API_KEY
+    description: your Oathbreaker AI API key
+    url: https://oathbreaker.ai/dashboard
+    secret: true
