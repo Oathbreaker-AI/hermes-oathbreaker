@@ -10,11 +10,12 @@ What the profile adjusts, and why (the API accepts only the request fields it do
   - an output budget on every request: Flash defaults to 256 output tokens when none is sent;
   - a reasoning choice is sent as top-level ``reasoning_effort`` (low, high or max) instead of
     Hermes's generic ``reasoning`` field, which the API rejects;
-  - the API's "between 1 and 256 messages" error counts as context overflow, so Hermes
-    compresses the conversation instead of failing;
+  - message-count overflow counts as context overflow, so Hermes compresses the
+    conversation instead of failing, including responses from older API deployments;
   - both models declare their 131,072-token context window.
 """
 
+import re
 from typing import Any
 
 from providers import register_provider
@@ -24,6 +25,7 @@ FLAGSHIP = "oathbreaker-glm-5.3"
 FLASH = "oathbreaker-glm-5.3-flash"
 CONTEXT_WINDOW = 131_072
 EFFORTS = ("low", "high", "max")
+_HISTORY_LIMIT = re.compile(r"\bconversation has ([1-9][0-9]*) messages; the maximum is ([1-9][0-9]*)\.")
 
 # Hermes's effort ladder onto the API's three levels. Never escalates, except xhigh -> max, as
 # Hermes does for GLM-5.3 elsewhere.
@@ -44,8 +46,12 @@ def _reasoning_effort(reasoning_config: dict | None) -> str | None:
 
 
 def _classify_api_error(error, *, status_code=None, error_code=None, message="", body=None, model=None):
-    """The API caps a request at 256 messages; compressing the conversation fixes that."""
-    if status_code == 400 and "between 1 and 256 messages" in (message or "").lower():
+    """Recover a message-count overflow without treating malformed input as a full history."""
+    if status_code != 400 or error_code not in (None, "invalid_request"):
+        return None
+    text = (message or "").lower()
+    count = _HISTORY_LIMIT.search(text)
+    if (count and int(count[1]) > int(count[2])) or "provide between 1 and 256 messages." in text:
         return {"reason": "context_overflow", "should_compress": True}
     return None
 

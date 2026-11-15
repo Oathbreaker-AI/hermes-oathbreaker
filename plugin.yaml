@@ -1,6 +1,6 @@
 name: oathbreaker-provider
 kind: model-provider
-version: 1.0.0
+version: 1.0.1
 requires_hermes: ">=0.23.1"
 description: Oathbreaker AI as a model provider - GLM-5.3 Abliterated and GLM-5.3 Flash Abliterated through a prepaid OpenAI-compatible API
 author: Formacha LLC
