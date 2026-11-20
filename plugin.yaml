@@ -1,8 +1,8 @@
 name: oathbreaker-provider
 kind: model-provider
-version: 1.0.1
+version: 1.1.0
 requires_hermes: ">=0.23.1"
-description: Oathbreaker AI as a model provider - GLM-5.3 Abliterated and GLM-5.3 Flash Abliterated through a prepaid OpenAI-compatible API
+description: Oathbreaker AI as a model provider - abliterated GLM-5.3, DeepSeek V4.1 Flash and Kimi K3.1 Pro models through a prepaid OpenAI-compatible API
 author: Formacha LLC
 requires_env:
   - name: OATHBREAKER_API_KEY
